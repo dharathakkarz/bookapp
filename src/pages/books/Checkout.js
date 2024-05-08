@@ -1,15 +1,49 @@
-import React, { useState } from 'react';
+
+
+import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
   const [shippingInfo, setShippingInfo] = useState({
-    fullName: '',
+    MobileNum: '',
     address: '',
     city: '',
     postalCode: '',
-    country: ''
+    amount: ''
   });
+
+  const [isFormFilled, setIsFormFilled] = useState(false);
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const totalAmount = queryParams.get('amount');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Load data from local storage
+    const storedUserData = JSON.parse(localStorage.getItem('userData'));
+    if (storedUserData) {
+      const { phn, address } = storedUserData;
+      setShippingInfo(prevState => ({
+        ...prevState,
+        MobileNum: phn || '',
+        address: address || '',
+      }));
+    }
+  }, []);
+
+  useEffect(() => {
+    // Check if at least one of the four fields is filled
+    const { MobileNum, address, city, postalCode } = shippingInfo;
+    const isFilled = MobileNum !== '' && address !== '' && city !== '' && postalCode !== '';
+    setIsFormFilled(isFilled);
+  }, [shippingInfo]);
+
+  const handlePay = () => {
+    navigate('/paynow');
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -21,22 +55,20 @@ const Checkout = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle form submission logic here
     console.log('Shipping info:', shippingInfo);
   };
 
   return (
     <div>
-      <h2>Shipping Information</h2>
-      <form onSubmit={handleSubmit}>
+      <h2><center>Checkout Information</center></h2>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', maxWidth: '400px', margin: 'auto' }}>
         <TextField
           label="Mobile Number"
           variant="outlined"
-          name="Mobile Num"
+          name="MobileNum"
           value={shippingInfo.MobileNum}
           onChange={handleChange}
           fullWidth
-          required
           margin="normal"
         />
         <TextField
@@ -46,41 +78,37 @@ const Checkout = () => {
           value={shippingInfo.address}
           onChange={handleChange}
           fullWidth
-          required
           margin="normal"
         />
+        <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <TextField
+            label="City"
+            variant="outlined"
+            name="city"
+            value={shippingInfo.city}
+            onChange={handleChange}
+            style={{ marginRight: '10px' }}
+          />
+          <TextField
+            label="Postal Code"
+            variant="outlined"
+            name="postalCode"
+            value={shippingInfo.postalCode}
+            onChange={handleChange}
+          />
+        </div>
         <TextField
-          label="City"
+          label="Total Amount"
           variant="outlined"
-          name="city"
-          value={shippingInfo.city}
+          name="amount"
+          value={totalAmount}
           onChange={handleChange}
           fullWidth
-          required
           margin="normal"
+          disabled
         />
-        <TextField
-          label="Postal Code"
-          variant="outlined"
-          name="postalCode"
-          value={shippingInfo.postalCode}
-          onChange={handleChange}
-          fullWidth
-          required
-          margin="normal"
-        />
-        <TextField
-          label="Country"
-          variant="outlined"
-          name="country"
-          value={shippingInfo.country}
-          onChange={handleChange}
-          fullWidth
-          required
-          margin="normal"
-        />
-        <Button type="submit" variant="contained" color="primary">
-          Submit
+        <Button type="submit" variant="contained" onClick={handlePay} color="primary" style={{ marginTop: '20px' }} disabled={!isFormFilled}>
+          PayNow
         </Button>
       </form>
     </div>
@@ -88,4 +116,3 @@ const Checkout = () => {
 };
 
 export default Checkout;
-

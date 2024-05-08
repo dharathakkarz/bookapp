@@ -1,8 +1,6 @@
 
 import axios from 'axios';
-
-import { FETCH_BOOKS, FETCH_BOOKS_DONE, FETCH_BOOKS_FAIL } from '../../constant/ActionType';
-
+import { FETCH_BOOKS, FETCH_BOOKS_DONE, FETCH_BOOKS_FAIL, ADDCART } from '../../constant/ActionType';
 
 export const fetchBooks = () => {
   return async dispatch => {
@@ -15,3 +13,9 @@ export const fetchBooks = () => {
     }
   };
 };
+
+export const addToCart = (item) => ({
+  type: ADDCART,
+  payload: item 
+});
+

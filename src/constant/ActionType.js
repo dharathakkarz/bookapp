@@ -1,3 +1,5 @@
 export const FETCH_BOOKS = 'FETCH_BOOKS';
 export const FETCH_BOOKS_DONE = 'FETCH_BOOKS_DONE';
 export const FETCH_BOOKS_FAIL = 'FETCH_BOOKS_FAIL';
+
+export const ADDCART= 'ADDCART';
